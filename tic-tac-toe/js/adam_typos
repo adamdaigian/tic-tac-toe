@@ -1,0 +1,152 @@
+$(function() {
+
+  var game                        = $('game');
+  var board                       = $('#board');
+  var status_indicators           = $('#teams li');
+  var tiles = [];
+  var players = {
+    name:     'My Little Pony',
+    marker:      '&times;',
+    img_url:    'img/mlp.jpg',
+    indicator: $(status_indicators[0])
+  }
+  {
+    name:           'Buffalo Tears',
+    marker:         '&oslash;',
+    img_url:        'img/buffalo.jpg',
+    indicator: $(status_indicators[1])
+  }
+];
+var current_player;
+var turns = 0;
+var win_combos = [
+[0,1,2], [3,4,5], [6,7,8],
+[0,3,6], [1,4,7], [2,5,8],
+[0,4,8], [2,4,6]
+];
+
+var initialize = function() {
+_(9).times(function(i) {
+  tiles.push(
+    $('<div/>')
+    .attr({'id':'tile'+i, 'class':'tile'})
+    on('click', handle_click)
+    .appendTO(board));
+});
+current_player = _.first(players);
+var player_indicators = _.map(players, function(player) {
+  return player.indicator
+});
+_.each(player_indicators, function(indicator, i)
+  var indicator = $(indicator);
+  var player = players[i];
+  $('team', indicator).html(player.marker);
+  $('.player', indicator).html(player.name);
+  $('img', indicator).attr('src', player.img_url);
+  if (player == current_player) {
+    indicator.assClass('current');
+    }
+  });
+  game.fadeIn();
+};
+
+var is_active = function(tile) {
+  tile.html(current_player.marker);
+  tile.addClass('active');
+  tile.data('player, current_player');
+  turns++;
+};
+
+var toggle_player = function() {
+  current_player = players{get_current_player_index()];
+    _.each(tiles, function(tile, i) {
+      if (tile.data('player') == current_player) {
+        current_player_board_data.push[i];
+      }
+    )};
+  return current_player_board_data;
+};
+
+  var is_win = function() {
+    var board_data = get_board_data();
+    var match_found = false;
+    _.each(win_combos, function(combo) {
+      if (_.intersection(combo, board_data).length == combo.length) {
+        show_combo(combo);
+        match_found = true;
+    }
+  });
+  return match_found;
+};
+
+  var is_tie = function() {
+    return (turns == tiles.length);
+  };
+
+  var handle_win = function() {
+    _.each(tiles, function(tile) {
+      tile.off('click');
+    });
+    update_results({
+      img_src: current_player.img_url,
+      img_alt: current_player.name,
+      message: 'Congratulations, <span id="winner>'
+        + current_player.name
+        + '</span>!'
+    });
+  };
+
+  update_results =  function(args) {
+    var results     = $('#results');
+    var winner_el   = $('h1', results);
+    var image_el    = $('.image', results);
+    var button      = $('<img/>');
+    var overlay     = $('#overlay');
+    image.attr({
+      src: args.img_src,
+      alt: args.img_alt
+    });
+    image_el.html(image);
+    winner_el.html(args.message);
+    button.on('click', new_game);
+    hide_indicators();
+    setTimeout(function() {
+      overlay.fadeIN(500);
+      results.faedIN(500);
+    },1000);
+  };
+
+  var hide_indicators = function() {
+    status_indicators.animate({'opacity':0}, 2000);
+  };
+
+  var show_combo = function(combo) {
+    _.each(combo, function(tile_index) {
+      tiles[tile_index].addClass('combo');
+    });
+  }
+
+  var handle_click = function() {
+    var tile = $(this);
+    if (is_active(tile)) {
+      return false;
+    }
+    activate_tile(tile);
+    if (is_win()) {
+      handle_win();
+      return false;
+    }
+    if (is_tie()) {
+      handle_tie();
+      return false;
+    }
+    toggle_player();
+  }
+
+  var new_game = function() {
+    window.location.href = window.location.href
+  };
+
+  initialize();
+
+});
